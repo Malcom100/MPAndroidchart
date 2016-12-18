@@ -249,8 +249,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             LineDataSet lineDataSet = new LineDataSet(entries,key);
             //set color here
             lineDataSet.setColor(colors.get(i));
-            //disable point lable
+            //disable point label on line
             lineDataSet.setDrawValues(false);
+            //disable circles on line
+            lineDataSet.setDrawCircles(false);
             //3. adding to lineData
             dataSets.add(lineDataSet);
             dataSetsToRemove.add(lineDataSet);
