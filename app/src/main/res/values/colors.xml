@@ -3,4 +3,9 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+    <!-- Graph -->
+    <color name="valuePurple">#9C27B0</color>
+    <color name="valueBlue">#1565C0</color>
+    <color name="valueGreen">#00796B</color>
 </resources>
