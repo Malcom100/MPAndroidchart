@@ -1,12 +1,12 @@
 package com.test.exemplempandroid;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.components.MarkerView;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.highlight.Highlight;
-import com.github.mikephil.charting.utils.MPPointF;
 
 /**
  * Created by gtshilombowanticale on 18-12-16.
@@ -31,7 +31,7 @@ public class CustomMarkerView extends MarkerView {
     @Override
     public void refreshContent(Entry e, Highlight highlight) {
         super.refreshContent(e, highlight);
-        valueText.setText(String.format("%d",e.getY()));
+        valueText.setText(String.format("%f", e.getY()));
     }
-    
+
 }
