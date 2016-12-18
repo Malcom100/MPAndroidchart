@@ -1,24 +1,42 @@
 package com.test.exemplempandroid;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.test.exemplempandroid.models.CustomValue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TimerTask;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     private Map<String,List<CustomValue>> realTimeValues = new HashMap<String,List<CustomValue>>();
+
+    private List<Integer> colors = new ArrayList<Integer>();
+
+    private LineChart lineChart;
+    private TextView realTimeTex;
+    private TextView choiceTex;
+
+    final Handler handlerGraph = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +54,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        initColors();
         initRealtimeValues();
+        initView();
+
+        handlerGraph.post(runnableGraph);
     }
 
     @Override
@@ -61,6 +83,30 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    Runnable runnableGraph = new Runnable() {
+
+        @Override
+        public void run() {
+            try{
+                //do your code here
+                Log.i("Test"," --- calling ---- ");
+            }
+            catch (Exception e) {
+                // TODO: handle exception
+            }
+            finally{
+                //also call the same runnable to call it at regular interval
+                handlerGraph.postDelayed(this, 6000);
+            }
+        }
+    };
+
+    private void initColors(){
+        colors.add(getResources().getColor(R.color.valuePurple));
+        colors.add(getResources().getColor(R.color.valueBlue));
+        colors.add(getResources().getColor(R.color.valueGreen));
+    }
+
     private void initRealtimeValues(){
         List<CustomValue> listOne = new ArrayList<CustomValue>();
         List<CustomValue> listTwo = new ArrayList<CustomValue>();
@@ -74,6 +120,14 @@ public class MainActivity extends AppCompatActivity {
         listOne.add(new CustomValue(7f,7f));
         listOne.add(new CustomValue(9f,9f));
         listOne.add(new CustomValue(11f,11f));
+        listOne.add(new CustomValue(12f,11f));
+        listOne.add(new CustomValue(13f,11f));
+        listOne.add(new CustomValue(15f,9f));
+        listOne.add(new CustomValue(16f,8.5f));
+        listOne.add(new CustomValue(17f,7f));
+        listOne.add(new CustomValue(19f,5f));
+        listOne.add(new CustomValue(20f,4.5f));
+
 
         listTwo.add(new CustomValue(10f,1f));
         listTwo.add(new CustomValue(20f,2f));
@@ -98,4 +152,60 @@ public class MainActivity extends AppCompatActivity {
         realTimeValues.put("2_r_ind",listTwo);
         realTimeValues.put("5_r_polled",listThree);
     }
+
+    private void initView(){
+        lineChart = (LineChart)findViewById(R.id.chart);
+        realTimeTex = (TextView)findViewById(R.id.real_time);
+        choiceTex = (TextView)findViewById(R.id.choice);
+
+        realTimeTex.setOnClickListener(this);
+        choiceTex.setOnClickListener(this);
+
+        //contains all data
+        List<ILineDataSet> dataSets = new ArrayList<ILineDataSet>();
+
+        int i = 0;
+        for(Map.Entry<String,List<CustomValue>> v : realTimeValues.entrySet()){
+            String key = v.getKey();
+            List<CustomValue> value = v.getValue();
+            //1. adding in entries
+            List<Entry> entries = new ArrayList<Entry>();
+            for(CustomValue cv : value){
+                entries.add(new Entry(cv.getAxisX(),cv.getAxisY()));
+            }
+            //2. adding to dataset with label
+            LineDataSet lineDataSet = new LineDataSet(entries,key);
+            //set color here
+            lineDataSet.setColor(colors.get(i));
+            //3. adding to lineData
+            dataSets.add(lineDataSet);
+            i++;
+        }
+
+        //adding dataSet :
+        LineData data = new LineData(dataSets);
+        //adding to chart :
+        lineChart.setData(data);
+        //disable axis
+        lineChart.getXAxis().setEnabled(false);
+        lineChart.getAxisLeft().setEnabled(false);
+        lineChart.getAxisRight().setEnabled(false);
+        //disable description :
+        lineChart.getDescription().setEnabled(false);
+        lineChart.invalidate(); //refresh
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.real_time:
+                Log.i("Test","*** real time *** ");
+                break;
+            case R.id.choice :
+                Log.i("Test", " *** choice *** ");
+                break;
+        }
+    }
+
+
 }
