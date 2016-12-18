@@ -253,6 +253,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             lineDataSet.setDrawValues(false);
             //disable circles on line
             lineDataSet.setDrawCircles(false);
+            //highlight
+            lineDataSet.setHighlightEnabled(true);
+            lineDataSet.setDrawHighlightIndicators(true);
+            lineDataSet.setHighLightColor(colors.get(1));
+
             //3. adding to lineData
             dataSets.add(lineDataSet);
             dataSetsToRemove.add(lineDataSet);
@@ -260,6 +265,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             saveDataSetChanel.put(key,lineDataSet);
             i++;
         }
+
 
         //adding dataSet :
         LineData data = new LineData(dataSets);
@@ -271,6 +277,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         lineChart.getAxisRight().setEnabled(false);
         //disable description :
         lineChart.getDescription().setEnabled(false);
+        //marker view
+        lineChart.setDrawMarkerViews(true);
+        CustomMarkerView customMarkerView = new CustomMarkerView(this,R.layout.layout_marker_view);
+        lineChart.setMarkerView(customMarkerView);
         lineChart.invalidate(); //refresh
     }
 
