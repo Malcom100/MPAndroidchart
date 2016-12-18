@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">ExempleMPAndroid</string>
     <string name="action_settings">Settings</string>
+
+    <!-- Graph -->
+    <string name="realtime">Realtime</string>
+    <string name="choice">Choice</string>
 </resources>
