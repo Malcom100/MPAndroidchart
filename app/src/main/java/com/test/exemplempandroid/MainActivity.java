@@ -128,7 +128,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //do your code here
                 if(realTimeValues.size() > 0 && canListen){
                     if(upValue < 4){
-                        Log.i("Adneom", " *** up *** ");
                         LineDataSet lineDataSet = saveDataSetChanel.get("1_r_polled");
                         List<Entry> en = lineDataSet.getValues();
                         en.add(new Entry(valueX,valueY));
@@ -138,7 +137,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         downValue = 3;
                     }else{
                         if(downValue > 0){
-                            Log.i("Adneom"," *** down **** ");
                             downValue--;
                             LineDataSet lineDataSet = saveDataSetChanel.get("1_r_polled");
                             List<Entry> en = lineDataSet.getValues();
@@ -153,11 +151,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     //update values :
                     lineChart.notifyDataSetChanged();
                     lineChart.invalidate();
-                    Log.i("Test", " --- update ---- ");
                 }
             }
             catch (Exception e) {
-                // TODO: handle exception
             }
             finally{
                 //also call the same runnable to call it at regular interval
@@ -289,7 +285,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()){
             case R.id.real_time:
                 canListen = true;
-                Log.i("Test", "*** real time *** ");
                 initValues();
                 handlerGraph.postDelayed(runnableGraph, 1000);
                 break;
