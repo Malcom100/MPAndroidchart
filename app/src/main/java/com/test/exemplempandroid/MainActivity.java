@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     /**
      * data list to display on line chart (all line data set)
      */
-    List<ILineDataSet> dataSets = new ArrayList<ILineDataSet>();
+    List<ILineDataSet> dataSets;
     /**
      * Allows to delete data
      */
@@ -249,6 +249,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             LineDataSet lineDataSet = new LineDataSet(entries,key);
             //set color here
             lineDataSet.setColor(colors.get(i));
+            //disable point lable
+            lineDataSet.setDrawValues(false);
             //3. adding to lineData
             dataSets.add(lineDataSet);
             dataSetsToRemove.add(lineDataSet);
