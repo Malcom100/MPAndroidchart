@@ -28,15 +28,52 @@ import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
+    /**
+     * List containing values from server after request GET
+     */
     private Map<String,List<CustomValue>> realTimeValues = new HashMap<String,List<CustomValue>>();
 
+    /**
+     * Colors list
+     */
     private List<Integer> colors = new ArrayList<Integer>();
 
+    /**
+     * Components
+     */
     private LineChart lineChart;
     private TextView realTimeTex;
     private TextView choiceTex;
 
+    /**
+     * Simulate real time
+     */
     final Handler handlerGraph = new Handler();
+
+    /**
+     * Simulate update from real time
+     */
+    private boolean canListen = true;
+    private int upValue = 0;
+    private int downValue = 3;
+    private float valueX = 17f;
+    private float valueY = 6.5f;
+
+    /**
+     * data list to display on line chart (all line data set)
+     */
+    List<ILineDataSet> dataSets = new ArrayList<ILineDataSet>();
+    /**
+     * Allows to delete data
+     */
+    List<ILineDataSet> dataSetsToRemove = new ArrayList<ILineDataSet>();
+
+    /**
+     * This map allows to save for each channel the LineDataSet to update the
+     * values from real time (websocket by example)
+     */
+    Map<String,LineDataSet> saveDataSetChanel = new HashMap<String,LineDataSet>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initRealtimeValues();
         initView();
 
-        handlerGraph.post(runnableGraph);
+        handlerGraph.postDelayed(runnableGraph, 1000);
     }
 
     @Override
@@ -89,7 +126,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public void run() {
             try{
                 //do your code here
-                Log.i("Test"," --- calling ---- ");
+                if(realTimeValues.size() > 0 && canListen){
+                    if(upValue < 4){
+                        Log.i("Adneom", " *** up *** ");
+                        LineDataSet lineDataSet = saveDataSetChanel.get("1_r_polled");
+                        List<Entry> en = lineDataSet.getValues();
+                        en.add(new Entry(valueX,valueY));
+                        valueX++;
+                        valueY += 1.5f;
+                        upValue++;
+                        downValue = 3;
+                    }else{
+                        if(downValue > 0){
+                            Log.i("Adneom"," *** down **** ");
+                            downValue--;
+                            LineDataSet lineDataSet = saveDataSetChanel.get("1_r_polled");
+                            List<Entry> en = lineDataSet.getValues();
+                            en.add(new Entry(valueX,valueY));
+                            valueX++;
+                            valueY -= 2.5f;
+                        }else{
+                            upValue = 0;
+                        }
+                    }
+
+                    //update values :
+                    lineChart.notifyDataSetChanged();
+                    lineChart.invalidate();
+                    Log.i("Test", " --- update ---- ");
+                }
             }
             catch (Exception e) {
                 // TODO: handle exception
@@ -161,24 +226,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         realTimeTex.setOnClickListener(this);
         choiceTex.setOnClickListener(this);
 
-        //contains all data
-        List<ILineDataSet> dataSets = new ArrayList<ILineDataSet>();
+        initValues();
+    }
 
+    private void initValues(){
+        if(dataSets == null){
+            dataSets = new ArrayList<ILineDataSet>();
+        }
         int i = 0;
         for(Map.Entry<String,List<CustomValue>> v : realTimeValues.entrySet()){
             String key = v.getKey();
             List<CustomValue> value = v.getValue();
-            //1. adding in entries
+
+            //loop on lists
             List<Entry> entries = new ArrayList<Entry>();
             for(CustomValue cv : value){
+                //1. adding in entries
                 entries.add(new Entry(cv.getAxisX(),cv.getAxisY()));
             }
+
             //2. adding to dataset with label
             LineDataSet lineDataSet = new LineDataSet(entries,key);
             //set color here
             lineDataSet.setColor(colors.get(i));
             //3. adding to lineData
             dataSets.add(lineDataSet);
+            dataSetsToRemove.add(lineDataSet);
+            //for real time
+            saveDataSetChanel.put(key,lineDataSet);
             i++;
         }
 
@@ -199,12 +274,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.real_time:
-                Log.i("Test","*** real time *** ");
+                canListen = true;
+                Log.i("Test", "*** real time *** ");
+                initValues();
+                handlerGraph.postDelayed(runnableGraph, 1000);
                 break;
             case R.id.choice :
-                Log.i("Test", " *** choice *** ");
+                canListen = false;
+                handlerGraph.removeCallbacks(runnableGraph);
+                dataSets.removeAll(dataSetsToRemove);
                 break;
         }
+        lineChart.notifyDataSetChanged();
+        lineChart.invalidate();
     }
 
 
