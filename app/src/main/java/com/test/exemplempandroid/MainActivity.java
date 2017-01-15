@@ -75,6 +75,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Map<String,LineDataSet> saveDataSetChanel = new HashMap<String,LineDataSet>();
 
 
+    /**
+     * Represents the Dates list.
+     */
+    List<Long> mTimestamp = new ArrayList<Long>();
+    private long timestampReference;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,10 +98,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
 
         initColors();
+        createTimestamp();
         initRealtimeValues();
         initView();
 
-        handlerGraph.postDelayed(runnableGraph, 1000);
+       // handlerGraph.postDelayed(runnableGraph, 1000);
     }
 
     @Override
@@ -125,24 +132,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public void run() {
             try{
+                List<Entry> en = null;
+                LineDataSet lineDataSet = null;
                 //do your code here
                 if(realTimeValues.size() > 0 && canListen){
                     if(upValue < 4){
-                        LineDataSet lineDataSet = saveDataSetChanel.get("1_r_polled");
-                        List<Entry> en = lineDataSet.getValues();
+                        lineDataSet = saveDataSetChanel.get("1_r_polled");
+                        en = lineDataSet.getValues();
                         en.add(new Entry(valueX,valueY));
                         valueX++;
                         valueY += 1.5f;
                         upValue++;
                         downValue = 3;
+                        Log.i("Adneom"," new entry(up) is "+en.get(en.size()-1).getX()+","+en.get(en.size()-1).getY());
                     }else{
                         if(downValue > 0){
                             downValue--;
-                            LineDataSet lineDataSet = saveDataSetChanel.get("1_r_polled");
-                            List<Entry> en = lineDataSet.getValues();
+                            lineDataSet = saveDataSetChanel.get("1_r_polled");
+                            en = lineDataSet.getValues();
                             en.add(new Entry(valueX,valueY));
                             valueX++;
                             valueY -= 2.5f;
+                            Log.i("Adneom"," new entry(down) is "+en.get(en.size()-1).getX()+","+en.get(en.size()-1).getX());
                         }else{
                             upValue = 0;
                         }
@@ -150,7 +161,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                     //update values :
                     lineChart.notifyDataSetChanged();
-                    lineChart.invalidate();
+                    lineChart.getXAxis().setAxisMaximum(en.get(en.size()-1).getX());
+                    lineChart.moveViewToX(en.get(en.size()-1).getX());
+                    Log.i("Adneom", " ---- notifydatasetchanged ---- ");
                 }
             }
             catch (Exception e) {
@@ -168,12 +181,49 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         colors.add(getResources().getColor(R.color.valueGreen));
     }
 
+    private void createTimestamp(){
+        mTimestamp.add(new Long(1468578210));
+        mTimestamp.add(new Long(1469104530));
+        mTimestamp.add(new Long(1469540310));
+        mTimestamp.add(new Long(1469893110));
+        mTimestamp.add(new Long(1470044981));
+        mTimestamp.add(new Long(1470303881));
+        mTimestamp.add(new Long(1470562781));
+        mTimestamp.add(new Long(1470821741));
+        mTimestamp.add(new Long(1470994361));
+        mTimestamp.add(new Long(1471253441));
+        mTimestamp.add(new Long(1472805041));
+        mTimestamp.add(new Long(1473064061));
+        mTimestamp.add(new Long(1473409361));
+        mTimestamp.add(new Long(1473495523));
+        mTimestamp.add(new Long(1474269523));
+        mTimestamp.add(new Long(1474701043));
+        mTimestamp.add(new Long(1475046279));
+        mTimestamp.add(new Long(1475475411));
+        mTimestamp.add(new Long(1475475411));
+        mTimestamp.add(new Long(1476079911));
+        mTimestamp.add(new Long(1476512999));
+        mTimestamp.add(new Long(1477031639));
+        mTimestamp.add(new Long(1477804259));
+        mTimestamp.add(new Long(1478334419));
+        mTimestamp.add(new Long(1479209219));
+        mTimestamp.add(new Long(1479641459));
+        mTimestamp.add(new Long(1481596259));
+        mTimestamp.add(new Long(1481621459));
+        mTimestamp.add(new Long(1482565079));
+        mTimestamp.add(new Long(1483191479));
+        mTimestamp.add(new Long(1484055479));
+        mTimestamp.add(new Long(1484487479));
+
+        timestampReference = mTimestamp.get(0);
+    }
+
     private void initRealtimeValues(){
         List<CustomValue> listOne = new ArrayList<CustomValue>();
         List<CustomValue> listTwo = new ArrayList<CustomValue>();
         List<CustomValue> listThree = new ArrayList<CustomValue>();
 
-        listOne.add(new CustomValue(1f,1f));
+        /*listOne.add(new CustomValue(1f,1f));
         listOne.add(new CustomValue(3f,3f));
         listOne.add(new CustomValue(3f,3f));
         listOne.add(new CustomValue(5f,5f));
@@ -188,14 +238,42 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         listOne.add(new CustomValue(17f,7f));
         listOne.add(new CustomValue(19f,5f));
         listOne.add(new CustomValue(20f,4.5f));
+        listOne.add(new CustomValue(20f,12f));
+        listOne.add(new CustomValue(21f,13f));
+        listOne.add(new CustomValue(22f,14f));
+        listOne.add(new CustomValue(24f,15f));
+        listOne.add(new CustomValue(25f,16f));
+        listOne.add(new CustomValue(30f,16f));
+        listOne.add(new CustomValue(31f,16f));
+        listOne.add(new CustomValue(37f,11f));
+        listOne.add(new CustomValue(45f,11f));
+        listOne.add(new CustomValue(50f,11f));
+        listOne.add(new CustomValue(55f,9f));
+        listOne.add(new CustomValue(65f,8.5f));
+        listOne.add(new CustomValue(70f,7f));
+        listOne.add(new CustomValue(75f,6f));
+        listOne.add(new CustomValue(80f,5f));
+        listOne.add(new CustomValue(82f,5.5f));
+        listOne.add(new CustomValue(85f,7f));
+        listOne.add(new CustomValue(87f,9f));
+        listOne.add(new CustomValue(90f,12f));*/
 
+        float valueY = 230;
+        for(Long valueX : mTimestamp){
+            long smallNumber = valueX - timestampReference;
+            listOne.add(new CustomValue(Math.abs(smallNumber), valueY));
+            valueY += 1f;
+            if(valueY == 235f){
+                valueY = 230f;
+            }
+        }
 
-        listTwo.add(new CustomValue(10f,1f));
-        listTwo.add(new CustomValue(20f,2f));
-        listTwo.add(new CustomValue(30f,2.5f));
-        listTwo.add(new CustomValue(40f,4f));
-        listTwo.add(new CustomValue(50f,5f));
-        listTwo.add(new CustomValue(80f,7f));
+        listTwo.add(new CustomValue(230f,1f));
+        listTwo.add(new CustomValue(231f,2f));
+        listTwo.add(new CustomValue(230f,2.5f));
+        listTwo.add(new CustomValue(234f,4f));
+        listTwo.add(new CustomValue(232f,5f));
+        listTwo.add(new CustomValue(233f,7f));
 
         listThree.add(new CustomValue(5f,0.5f));
         listThree.add(new CustomValue(6f,1f));
@@ -206,12 +284,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         listThree.add(new CustomValue(11f,3.5f));
         listThree.add(new CustomValue(12f,4f));
         listThree.add(new CustomValue(13f,4.5f));
-        listThree.add(new CustomValue(14f,5f));
-        listThree.add(new CustomValue(15f,5f));
+        listThree.add(new CustomValue(14f, 5f));
+        listThree.add(new CustomValue(15f, 5f));
 
         realTimeValues.put("1_r_polled", listOne);
-        realTimeValues.put("2_r_ind",listTwo);
-        realTimeValues.put("5_r_polled",listThree);
+        /*realTimeValues.put("2_r_ind", listTwo);
+        realTimeValues.put("5_r_polled",listThree);*/
     }
 
     private void initView(){
@@ -238,7 +316,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             List<Entry> entries = new ArrayList<Entry>();
             for(CustomValue cv : value){
                 //1. adding in entries
-                entries.add(new Entry(cv.getAxisX(),cv.getAxisY()));
+                entries.add(new Entry(cv.getAxisX(), cv.getAxisY()));
             }
 
             //2. adding to dataset with label
@@ -248,7 +326,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //disable point label on line
             lineDataSet.setDrawValues(false);
             //disable circles on line
-            lineDataSet.setDrawCircles(false);
+            lineDataSet.setDrawCircles(true);
             //highlight
             lineDataSet.setHighlightEnabled(true);
             lineDataSet.setDrawHighlightIndicators(true);
@@ -268,15 +346,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //adding to chart :
         lineChart.setData(data);
         //disable axis
-        lineChart.getXAxis().setEnabled(false);
-        lineChart.getAxisLeft().setEnabled(false);
+        /*lineChart.getXAxis().setEnabled(false);
+        lineChart.getAxisLeft().setEnabled(false);*/
         lineChart.getAxisRight().setEnabled(false);
         //disable description :
         lineChart.getDescription().setEnabled(false);
         //marker view
         lineChart.setDrawMarkerViews(true);
-        CustomMarkerView customMarkerView = new CustomMarkerView(this,R.layout.layout_marker_view);
+        CustomMarkerView customMarkerView = new CustomMarkerView(this,R.layout.layout_marker_view,timestampReference);
         lineChart.setMarkerView(customMarkerView);
+        //x axis format
+        lineChart.getXAxis().setValueFormatter(new DateAxisValueFormatter(timestampReference));
         lineChart.invalidate(); //refresh
     }
 
